@@ -4,7 +4,7 @@ const username = Bun.env.DB_USERNAME || 'your-username'
 const password = Bun.env.DB_PASSWORD || 'your-password'
 const db_name = Bun.env.MONGO_DBNAME || 'tinnerapp'
 
-const uri = `mongodb+srv://${username}:${password}@${db_name}@cluster0.pk05e.mongodb.net/?retryWrites=true&w=majority&appName=${db_name}`
+const uri = `mongodb+srv://jatuphatkr:HmyqPX8PGKGQFmZ7@cluster0.pk05e.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`
 
 export const MongoDB = {
     connect: async function () {

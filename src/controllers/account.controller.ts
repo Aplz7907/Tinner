@@ -54,4 +54,5 @@ export const AccountController = new Elysia({
                 set.status = "Bad Request"
                 throw new Error(`Invalid username or password`)
             }
-        },
+        }
+    })

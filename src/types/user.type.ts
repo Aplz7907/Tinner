@@ -25,8 +25,8 @@ export const _profile = t.Object({
 export const _user = t.Object({
     ..._profile.properties,
     //todo: implement like feature
-    // followers: profile[]
-    // following: profile[]
+    followers: t.Optional(t.Array(t.Union([t.Partial(_profile), t.String()]))),
+    following: t.Optional(t.Array(t.Union([t.Partial(_profile), t.String()])))
 })
 
 const _userPagination = t.Object({
@@ -45,7 +45,8 @@ export const UserDto = new Elysia().model({
     pagination: t.Optional(_userPagination),
     updateProfile: _updateProfile,
     users: _userPaginator,
-    user: _user
+    user: _user,
+    target_id: t.Object({ target_id: t.String() }),
 })
 
 export type updateProfile = Static<typeof _updateProfile>

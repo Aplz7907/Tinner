@@ -19,8 +19,8 @@ const schema = new mongoose.Schema<IUserDocument, IUserModel>({
     // todo: implement photo feature
     photos: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Photo' }],
     // todo: implement like feature
-    // followers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-    // following: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    followers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    following: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
 }, {
     timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' }
 })
@@ -31,6 +31,12 @@ schema.methods.toUser = function (): user {
         ageString = `${calculateAge(this.date_of_birth)}`
     const userPhotos = Array.isArray(this.photos)
         ? this.photos.map(photo => (new photo(photo)).toPhoto())
+        : undefined
+    const following = Array.isArray(this.following)
+        ? parseLikeUser(this.following)
+        : undefined
+    const followers = Array.isArray(this.followers)
+        ? parseLikeUser(this.followers)
         : undefined
     return {
         id: this._id.toString(),
@@ -46,7 +52,11 @@ schema.methods.toUser = function (): user {
         looking_for: this.looking_for,
         location: this.location,
         gender: this.gender,
-        photos: userPhotos
+        photos: userPhotos,
+        following: following,
+        followers: followers,
+
+
     }
 }
 
@@ -69,3 +79,7 @@ schema.statics.createUser = async function (registerData: register): Promise<IUs
 }
 
 export const User = mongoose.model<IUserDocument, IUserModel>("User", schema)
+function parseLikeUser(followers: any[]) {
+    throw new Error('Function not implemented.')
+}
+

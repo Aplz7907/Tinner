@@ -10,11 +10,13 @@ import { AccountController } from "./controllers/account.controller"
 import { UserController } from "./controllers/user.controller"
 import staticPlugin from "@elysiajs/static"
 import { PhotoController } from "./controllers/photo.controller"
+import { LikeController } from "./controllers/like.controller"
 
 MongoDB.connect()
 
 const app = new Elysia()
   .use(cors())
+  .use(LikeController)
   .use(jwtConfig)
   .use(SwaggerConfig)
   .use(PhotoController)

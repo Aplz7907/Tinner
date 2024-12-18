@@ -5,6 +5,17 @@ import { user } from '../types/user.type'
 export const AccountService = {
     login: async function (loginData: login): Promise<user> {
         const user = await User.findOne({ username: loginData.username })
+            .populate("photos")
+
+            .populate({
+                path: "following",
+                select: "_id"
+            })
+
+            .populate({
+                path: "followers",
+                select: "_id"
+            })
             // todo: implement photo and like feature
             .exec()
         if (!user)
