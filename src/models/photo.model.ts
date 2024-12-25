@@ -4,21 +4,23 @@ import { photo } from "../types/photo.type"
 
 
 const schema = new mongoose.Schema<IPhotoDocument, IPhotoModel>({
-    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
     public_id: { type: String, required: true },
     url: { type: String, required: true },
     is_avatar: { type: Boolean, required: true, default: false },
 
 }, {
-    timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' }
+    timestamps: { createdAt: 'created_at' }
 })
+
 schema.methods.toPhoto = function (): photo {
+
     return {
         id: this._id.toString(),
         url: this.url,
         public_id: this.public_id,
-        is_avatar: this.is_avater,
-        created_at: this.ceate_at
+        is_avatar: this.is_avatar,
+        created_at: this.created_at,
 
     }
 }
@@ -33,4 +35,4 @@ schema.statics.setAvatar = async function (photo_id: string, user_id: string): P
     )
     return !!updatePhoto
 }
-export const _Photo = mongoose.model<IPhotoDocument, IPhotoModel>("photo", schema)
+export const _Photo = mongoose.model<IPhotoDocument, IPhotoModel>("Photo", schema)

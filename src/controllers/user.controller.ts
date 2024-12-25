@@ -14,7 +14,7 @@ export const UserController = new Elysia({
     .get('/all', () => {
         return {
             user: [
-                { id: '123' }
+                { id: '1', name: "ja" }
             ]
         }
     }, {

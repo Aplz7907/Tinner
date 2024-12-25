@@ -1,8 +1,8 @@
-import { register } from '../types/account.type'
 import mongoose from "mongoose"
-import { IUserDocument, IUserModel } from "../interfaces/useer.interface"
 import { calculateAge } from "../helper/date.helper"
-import { user } from '../types/user.type'
+import { IUserDocument, IUserModel } from "../interfaces/useer.interface"
+import { register } from "../types/account.type"
+import { user } from "../types/user.type"
 
 const schema = new mongoose.Schema<IUserDocument, IUserModel>({
     username: { type: String, required: true, unique: true },
@@ -24,20 +24,32 @@ const schema = new mongoose.Schema<IUserDocument, IUserModel>({
 }, {
     timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' }
 })
-
 schema.methods.toUser = function (): user {
     let ageString = 'N/A'
     if (this.date_of_birth)
         ageString = `${calculateAge(this.date_of_birth)}`
+
+
+
+
     const userPhotos = Array.isArray(this.photos)
         ? this.photos.map(photo => (new photo(photo)).toPhoto())
         : undefined
+
+    const parseLikeUser = (user: IUserDocument[]) => {
+        return user.map(u => {
+            if (u.display_name)
+                return u.toUser()
+            return u._id!.toString()
+        })
+    }
     const following = Array.isArray(this.following)
         ? parseLikeUser(this.following)
         : undefined
     const followers = Array.isArray(this.followers)
         ? parseLikeUser(this.followers)
         : undefined
+
     return {
         id: this._id.toString(),
         display_name: this.display_name,
@@ -52,14 +64,13 @@ schema.methods.toUser = function (): user {
         looking_for: this.looking_for,
         location: this.location,
         gender: this.gender,
+
         photos: userPhotos,
+
         following: following,
         followers: followers,
-
-
     }
 }
-
 schema.methods.verifyPassword = async function (password: string): Promise<boolean> {
     return await Bun.password.verify(password, this.password_hash)
 }
@@ -73,13 +84,7 @@ schema.statics.createUser = async function (registerData: register): Promise<IUs
         looking_for: registerData.looking_for,
         gender: registerData.gender,
     })
-
     await newUser.save()
     return newUser
 }
-
 export const User = mongoose.model<IUserDocument, IUserModel>("User", schema)
-function parseLikeUser(followers: any[]) {
-    throw new Error('Function not implemented.')
-}
-

@@ -1,33 +1,49 @@
 import Elysia from "elysia"
-import { AuthMiddleware, AuthPayLoad } from "../middlewares/auth.middleware"
-import { UserDto } from "../types/user.type"
-import { set } from "mongoose"
 import { LikeService } from "../services/like.service"
+import { UserDto } from "../types/user.type"
+import { AuthMiddleware, AuthPayLoad } from "../middlewares/auth.middleware"
+import { Query } from "mongoose"
 
 export const LikeController = new Elysia({
     prefix: "api/like",
     tags: ['Like']
-
 })
     .use(AuthMiddleware)
     .use(UserDto)
 
-    .put('/', async ({ body: { target_id }, Auth, set }) => {
+
+    .put('/', async ({ body: { target_id }, set, Auth }) => {
         try {
             const user_id = (Auth.payload as AuthPayLoad).id
             await LikeService.togglelike(user_id, target_id)
-            set.status = 400
-
+            set.status = "No Content"
         } catch (error) {
-            set.status = 400
-            if (error instanceof Error)
-                throw error
-            throw new Error("Somthing wrong")
-
+            set.status = "Bad Request"
+            throw error
         }
-
     }, {
-        detail: { summary: "Total Like" },
+        detail: { summary: "Toggle Like" },
         isSignIn: true,
         body: "target_id"
+    })
+    .get('/followers', async ({ Auth, query }) => {
+        const user_id = (Auth.payload as AuthPayLoad).id
+        const user_pagination = await LikeService.getFollowers(user_id, query)
+        return user_pagination
+    }, {
+        detail: { summary: "Get Followers" },
+        isSignIn: true,
+        query: "pagination",
+        response: "users"
+    })
+
+    .get('/following', async ({ Auth, query }) => {
+        const user_id = (Auth.payload as AuthPayLoad).id
+        const user_pagination = await LikeService.getFollowing(user_id, query)
+        return user_pagination
+    }, {
+        detail: { summary: "Get Following" },
+        isSignIn: true,
+        query: "pagination",
+        response: "users"
     })

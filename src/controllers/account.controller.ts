@@ -15,20 +15,20 @@ export const AccountController = new Elysia({
             const user = await AccountService.login(body)
             const token = await jwt.sign({ id: user.id })
             return { token, user }
+
         } catch (error) {
-            set.status = "Bad Request"
+            set.status = "Bad Request" //badd request
             if (error instanceof Error)
                 throw new Error(error.message)
             set.status = "Internal Server Error"
-            throw new Error('something went wrong, try again later')
+            throw new Error("Something went wrong , try again later")
         }
     }, {
         detail: { summary: "Login" },
         body: "login",
         response: "user_and_token",
     })
-
-    .post('/register', async ({ body, jwt, set }) => {
+    .post('/register', async ({ body, set, jwt }) => {
         try {
             const user = await AccountService.createNewUser(body)
             const token = await jwt.sign({ id: user.id })
@@ -38,13 +38,14 @@ export const AccountController = new Elysia({
             if (error instanceof Error)
                 throw new Error(error.message)
             set.status = 500
-            throw new Error('something went wrong, try again later')
+            throw new Error('Something went wrong , try again later')
         }
 
     }, {
         body: "register",
         response: "user_and_token",
         detail: {
+
             summary: "Create new user",
         },
         beforeHandle: ({ body: { username, password }, set }) => {
@@ -54,5 +55,5 @@ export const AccountController = new Elysia({
                 set.status = "Bad Request"
                 throw new Error(`Invalid username or password`)
             }
-        }
+        },
     })

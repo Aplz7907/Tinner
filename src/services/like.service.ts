@@ -1,7 +1,7 @@
-import mongoose, { get } from "mongoose"
-import { user, userPagination, userPaginator } from "../types/user.type"
-import { User } from "../models/user.model"
+import mongoose from "mongoose"
 import { QueryHelper } from "../helper/query.helper"
+import { User } from "../models/user.model"
+import { userPagination, userPaginator, user } from "../types/user.type"
 
 export const LikeService = {
     togglelike: async function (user_id: string, target_id: string): Promise<boolean> {
@@ -50,7 +50,7 @@ export const LikeService = {
         pagination.length = total[0].const
         let follower: user[] = []
         if (docs) {
-            follower = docs.followers as user[]
+            follower = docs.toUser()['followers'] as user[]
         }
         return {
             pagination: pagination,
@@ -80,7 +80,7 @@ export const LikeService = {
         pagination.length = total[0].const
         let followings: user[] = []
         if (docs) {
-            followings = docs.following as user[]
+            followings = docs.toUser()['following'] as user[]
         }
         return {
             pagination: pagination,
