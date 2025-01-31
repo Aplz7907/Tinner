@@ -1,13 +1,14 @@
-import { fileTypeFromBuffer } from "file-type"
-const acceptFileType = ['image/jpeg', 'image/png']
+import { fileTypeFromBuffer } from 'file-type'
+
+const acceptImageTypes = ['image/jpeg', 'image/png']
+
 export const ImageHelper = {
-    isImage: async function (file: ArrayBuffer): Promise<boolean> {
+    isImage: async function (fileArrayBuffer: ArrayBuffer): Promise<boolean> {
         // const buffer = await file.arrayBuffer()
-        const filetype = await fileTypeFromBuffer(file)
-        if (filetype === undefined)
+
+        const fileTypeResult = await fileTypeFromBuffer(fileArrayBuffer)
+        if (fileTypeResult === undefined)
             return false
-        return acceptFileType.includes(filetype.mime)
-
-
+        return acceptImageTypes.includes(fileTypeResult.mime)
     }
 }
