@@ -2,7 +2,6 @@ import mongoose from "mongoose"
 import { IPhotoDocument, IPhotoModel } from "../interfaces/photo.interface"
 import { photo } from "../types/photo.type"
 
-
 const schema = new mongoose.Schema<IPhotoDocument, IPhotoModel>({
     user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
     public_id: { type: String, required: true },
@@ -20,10 +19,11 @@ schema.methods.toPhoto = function (): photo {
         url: this.url,
         public_id: this.public_id,
         is_avatar: this.is_avatar,
-        created_at: this.created_at,
+        create_at: this.created_at,
 
     }
 }
+
 schema.statics.setAvatar = async function (photo_id: string, user_id: string): Promise<boolean> {
     await this.updateMany(
         { user: new mongoose.Types.ObjectId(user_id) },
@@ -35,4 +35,4 @@ schema.statics.setAvatar = async function (photo_id: string, user_id: string): P
     )
     return !!updatePhoto
 }
-export const _Photo = mongoose.model<IPhotoDocument, IPhotoModel>("Photo", schema)
+export const Photo = mongoose.model<IPhotoDocument, IPhotoModel>("Photo", schema)

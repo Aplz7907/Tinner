@@ -1,37 +1,35 @@
-import { Elysia, t } from "elysia"
-import { example } from "./controllers/example.controller"
-import { SwaggerConfig } from "./config/swagger.config"
-import { tlsConfig } from "./config/tls.config"
 import cors from "@elysiajs/cors"
-import { MongoDB } from "./config/database.config"
-import jwt from "@elysiajs/jwt"
-import { jwtConfig } from "./config/jwt.config"
-import { AccountController } from "./controllers/account.controller"
-import { UserController } from "./controllers/user.controller"
 import staticPlugin from "@elysiajs/static"
-import { PhotoController } from "./controllers/photo.controller"
+import Elysia from "elysia"
+import { jwtConfig } from "./configs/jwt.config"
+import { swaggerConfig } from "./configs/swagger.config"
+import { tlsConfig } from "./configs/tls.config"
+import { AccountController } from "./controllers/account.controller"
 import { LikeController } from "./controllers/like.controller"
-import { ErrorController } from "./controllers/errorController"
+import { PhotoController } from "./controllers/photo.controller"
+import { UserController } from "./controllers/user.controller"
+import { mongodb } from "./configs/database.config"
+import { ErrorController } from "./controllers/error.controller"
 
-MongoDB.connect()
+mongodb.connect()
+
+
 
 const app = new Elysia()
+  .use(swaggerConfig)
+  //.use(example)
   .use(cors())
-  .use(LikeController)
   .use(jwtConfig)
-  .use(SwaggerConfig)
-  .use(PhotoController)
+  .use(AccountController)
   .use(ErrorController)
-
+  .use(UserController)
+  .use(LikeController)
+  .use(PhotoController)
 
   .use(staticPlugin({
     assets: "public/uploads",
     prefix: "img"
   }))
-
-
-  .use(AccountController)
-  .use(UserController)
 
   .listen({
     port: Bun.env.PORT || 8000,
@@ -41,4 +39,4 @@ const app = new Elysia()
 let protocol = 'http'
 if ('cert' in tlsConfig)
   protocol = 'https'
-console.log(`🦊 Elysia is running at ${protocol}://${app.server?.hostname}:${app.server?.port}`)
+console.log(`😱💀 Elysia is running at ${protocol}://${app.server?.hostname}:${app.server?.port} 💀😱`)

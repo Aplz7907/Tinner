@@ -1,7 +1,7 @@
 import mongoose from "mongoose"
-import { Cloudinary } from "../config/cloudinary.config"
+import { Cloudinary } from "../configs/cloudinary.config"
 import { ImageHelper } from "../helper/image.helper"
-import { _Photo } from "../models/photo.model"
+import { Photo } from "../models/photo.model"
 import { User } from "../models/user.model"
 import { photo } from "../types/photo.type"
 
@@ -28,7 +28,7 @@ export const PhotoService = {
         if (!cloudPhoto.public_id || !cloudPhoto.url)
             throw new Error("Something went wrong , try again later!!!")
 
-        const uploadPhoto = new _Photo({
+        const uploadPhoto = new Photo({
             user: new mongoose.Types.ObjectId(user_id),
             url: cloudPhoto.secure_url,
             public_id: cloudPhoto.public_id,
@@ -44,19 +44,19 @@ export const PhotoService = {
     },
 
     getPhotos: async function (user_id: string): Promise<photo[]> {
-        const photoDocs = await _Photo.find({ user: user_id }).exec()
-        return photoDocs.map((doc: any) => doc.toPhoto())
+        const photoDocs = await Photo.find({ user: user_id }).exec()
+        return photoDocs.map(doc => doc.toPhoto())
     },
 
     delete: async function (photo_id: string): Promise<boolean> {
-        const doc = await _Photo.findById(photo_id).exec()
+        const doc = await Photo.findById(photo_id).exec()
         if (!doc)
             throw new Error(`photo ${photo_id} not existing`)
 
         await User.findByIdAndUpdate(doc.user, {
             $pull: { photos: photo_id }
         })
-        await _Photo.findByIdAndDelete(photo_id)
+        await Photo.findByIdAndDelete(photo_id)
 
         await Cloudinary.uploader.destroy(doc.public_id)
 
@@ -64,11 +64,11 @@ export const PhotoService = {
     },
 
     setAvatar: async function (photo_id: string, user_id: string): Promise<boolean> {
-        await _Photo.updateMany(
+        await Photo.updateMany(
             { user: new mongoose.Types.ObjectId(user_id) },
             { $set: { is_avatar: false } }
         )
-        const result = await _Photo.findByIdAndUpdate(photo_id,
+        const result = await Photo.findByIdAndUpdate(photo_id,
             { $set: { is_avatar: true } },
             //{ new: true }
         )

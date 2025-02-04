@@ -1,6 +1,6 @@
 import Elysia, { t, Static } from "elysia"
+import { _register } from "./register.types"
 import { _user } from "./user.type"
-import { _register } from "./register.type"
 
 export const _login = t.Object({
 

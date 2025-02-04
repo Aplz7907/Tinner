@@ -1,8 +1,9 @@
 import mongoose from "mongoose"
 import { calculateAge } from "../helper/date.helper"
-import { IUserDocument, IUserModel } from "../interfaces/useer.interface"
-import { register } from "../types/account.type"
+import { IUserDocument, IUserModel } from "../interfaces/user.interface"
+import { register } from "../types/account.types"
 import { user } from "../types/user.type"
+import { Photo } from "./photo.model"
 
 const schema = new mongoose.Schema<IUserDocument, IUserModel>({
     username: { type: String, required: true, unique: true },
@@ -22,7 +23,7 @@ const schema = new mongoose.Schema<IUserDocument, IUserModel>({
     followers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     following: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
 }, {
-    timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' }
+    timestamps: { createdAt: 'create_at', updatedAt: 'updated_at' }
 })
 schema.methods.toUser = function (): user {
     let ageString = 'N/A'
@@ -33,7 +34,7 @@ schema.methods.toUser = function (): user {
 
 
     const userPhotos = Array.isArray(this.photos)
-        ? this.photos.map(photo => (new photo(photo)).toPhoto())
+        ? this.photos.map(photo => (new Photo(photo)).toPhoto())
         : undefined
 
     const parseLikeUser = (user: IUserDocument[]) => {
@@ -54,14 +55,14 @@ schema.methods.toUser = function (): user {
         id: this._id.toString(),
         display_name: this.display_name,
         username: this.username,
-        created_at: this.created_at,
-        update_at: this.updated_at,
+        create_at: this.create_at,
+        updated_at: this.updated_at,
         // date_of_birth: this.date_of_birth,
         age: ageString,
         last_active: this.last_active,
         introduction: this.introduction,
         interest: this.interest,
-        looking_for: this.looking_for,
+        looking_for: this.looking_for ?? 'all',
         location: this.location,
         gender: this.gender,
 
